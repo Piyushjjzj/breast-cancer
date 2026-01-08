@@ -1,0 +1,199 @@
+{
+  "dataset_name": "Breast Cancer Wisconsin (Diagnostic)",
+  "description": "Predict breast cancer diagnosis based on cell features",
+  "fields": [
+    {
+      "name": "id",
+      "type": "identifier",
+      "dtype": "int64",
+      "description": "Unique sample identifier"
+    },
+    {
+      "name": "diagnosis",
+      "type": "target",
+      "dtype": "object",
+      "values": ["M", "B"],
+      "description": "Diagnosis: M = malignant, B = benign"
+    },
+    {
+      "name": "radius_mean",
+      "type": "feature",
+      "dtype": "float64",
+      "description": "Mean of distances from center to points on the perimeter"
+    },
+    {
+      "name": "texture_mean",
+      "type": "feature",
+      "dtype": "float64",
+      "description": "Standard deviation of gray-scale values"
+    },
+    {
+      "name": "perimeter_mean",
+      "type": "feature",
+      "dtype": "float64",
+      "description": "Mean perimeter"
+    },
+    {
+      "name": "area_mean",
+      "type": "feature",
+      "dtype": "float64",
+      "description": "Mean area"
+    },
+    {
+      "name": "smoothness_mean",
+      "type": "feature",
+      "dtype": "float64",
+      "description": "Mean smoothness"
+    },
+    {
+      "name": "compactness_mean",
+      "type": "feature",
+      "dtype": "float64",
+      "description": "Mean compactness"
+    },
+    {
+      "name": "concavity_mean",
+      "type": "feature",
+      "dtype": "float64",
+      "description": "Mean concavity"
+    },
+    {
+      "name": "concave points_mean",
+      "type": "feature",
+      "dtype": "float64",
+      "description": "Mean number of concave points"
+    },
+    {
+      "name": "symmetry_mean",
+      "type": "feature",
+      "dtype": "float64",
+      "description": "Mean symmetry"
+    },
+    {
+      "name": "fractal_dimension_mean",
+      "type": "feature",
+      "dtype": "float64",
+      "description": "Mean fractal dimension"
+    },
+    {
+      "name": "radius_se",
+      "type": "feature",
+      "dtype": "float64",
+      "description": "Standard error of radius"
+    },
+    {
+      "name": "texture_se",
+      "type": "feature",
+      "dtype": "float64",
+      "description": "Standard error of texture"
+    },
+    {
+      "name": "perimeter_se",
+      "type": "feature",
+      "dtype": "float64",
+      "description": "Standard error of perimeter"
+    },
+    {
+      "name": "area_se",
+      "type": "feature",
+      "dtype": "float64",
+      "description": "Standard error of area"
+    },
+    {
+      "name": "smoothness_se",
+      "type": "feature",
+      "dtype": "float64",
+      "description": "Standard error of smoothness"
+    },
+    {
+      "name": "compactness_se",
+      "type": "feature",
+      "dtype": "float64",
+      "description": "Standard error of compactness"
+    },
+    {
+      "name": "concavity_se",
+      "type": "feature",
+      "dtype": "float64",
+      "description": "Standard error of concavity"
+    },
+    {
+      "name": "concave points_se",
+      "type": "feature",
+      "dtype": "float64",
+      "description": "Standard error of concave points"
+    },
+    {
+      "name": "symmetry_se",
+      "type": "feature",
+      "dtype": "float64",
+      "description": "Standard error of symmetry"
+    },
+    {
+      "name": "fractal_dimension_se",
+      "type": "feature",
+      "dtype": "float64",
+      "description": "Standard error of fractal dimension"
+    },
+    {
+      "name": "radius_worst",
+      "type": "feature",
+      "dtype": "float64",
+      "description": "Worst radius"
+    },
+    {
+      "name": "texture_worst",
+      "type": "feature",
+      "dtype": "float64",
+      "description": "Worst texture"
+    },
+    {
+      "name": "perimeter_worst",
+      "type": "feature",
+      "dtype": "float64",
+      "description": "Worst perimeter"
+    },
+    {
+      "name": "area_worst",
+      "type": "feature",
+      "dtype": "float64",
+      "description": "Worst area"
+    },
+    {
+      "name": "smoothness_worst",
+      "type": "feature",
+      "dtype": "float64",
+      "description": "Worst smoothness"
+    },
+    {
+      "name": "compactness_worst",
+      "type": "feature",
+      "dtype": "float64",
+      "description": "Worst compactness"
+    },
+    {
+      "name": "concavity_worst",
+      "type": "feature",
+      "dtype": "float64",
+      "description": "Worst concavity"
+    },
+    {
+      "name": "concave points_worst",
+      "type": "feature",
+      "dtype": "float64",
+      "description": "Worst concave points"
+    },
+    {
+      "name": "symmetry_worst",
+      "type": "feature",
+      "dtype": "float64",
+      "description": "Worst symmetry"
+    },
+    {
+      "name": "fractal_dimension_worst",
+      "type": "feature",
+      "dtype": "float64",
+      "description": "Worst fractal dimension"
+    }
+  ]
+}

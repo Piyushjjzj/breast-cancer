@@ -1,0 +1,1 @@
+Place static assets here if needed (JS/CSS). The current index.html uses CDN for Bootstrap and inline script.
