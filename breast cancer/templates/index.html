@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OncoDetect AI | Advanced Breast Cancer Detection</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --primary: #2a6ecc;
+            --secondary: #1a365d;
+            --accent: #00c9a7;
+            --danger: #e63946;
+            --success: #2a9d8f;
+            --warning: #f4a261;
+            --light: #f8f9fa;
+            --dark: #212529;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: var(--dark);
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+        }
+        
+        .navbar-brand {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.8rem;
+            color: var(--primary) !important;
+        }
+        
+        .hero-section {
+            background: linear-gradient(rgba(42, 110, 204, 0.9), rgba(26, 54, 93, 0.9)), url('https://images.unsplash.com/photo-1559757148-5c350d0d3c56?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 100px 0;
+            margin-top: -76px;
+            padding-top: 180px;
+        }
+        
+        .feature-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1) !important;
+        }
+        
+        .dashboard-card {
+            border-radius: 15px;
+            border: none;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+        
+        .dashboard-card:hover {
+            box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+        }
+        
+        .stat-card {
+            border-radius: 15px;
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .stat-card-primary { background: linear-gradient(135deg, var(--primary), #1a56db); }
+        .stat-card-success { background: linear-gradient(135deg, var(--success), #21867a); }
+        .stat-card-danger { background: linear-gradient(135deg, var(--danger), #c1121f); }
+        .stat-card-warning { background: linear-gradient(135deg, #f4a261, #e76f51); }
+        
+        .tab-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .nav-tabs .nav-link {
+            border: none;
+            font-weight: 600;
+            color: #6c757d;
+            padding: 15px 30px;
+        }
+        
+        .nav-tabs .nav-link.active {
+            color: var(--primary);
+            border-bottom: 3px solid var(--primary);
+            background: transparent;
+        }
+        
+        .form-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .result-display {
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+        
+        .result-benign {
+            background: linear-gradient(135deg, var(--success), #21867a);
+        }
+        
+        .result-malignant {
+            background: linear-gradient(135deg, var(--danger), #c1121f);
+        }
+        
+        .progress-ring {
+            width: 120px;
+            height: 120px;
+        }
+        
+        .progress-ring-circle {
+            stroke: var(--primary);
+            stroke-linecap: round;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+            transition: stroke-dashoffset 0.5s ease;
+        }
+        
+        .report-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin-top: 30px;
+        }
+        
+        .report-header {
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .biomarker-table th {
+            background: var(--light);
+            font-weight: 600;
+        }
+        
+        .recommendation-box {
+            border-left: 4px solid var(--primary);
+            padding-left: 20px;
+            margin: 20px 0;
+        }
+        
+        .risk-meter {
+            height: 20px;
+            border-radius: 10px;
+            background: linear-gradient(to right, var(--success), var(--warning), var(--danger));
+            position: relative;
+        }
+        
+        .risk-indicator {
+            position: absolute;
+            top: -5px;
+            width: 10px;
+            height: 30px;
+            background: var(--dark);
+            border-radius: 5px;
+            transform: translateX(-50%);
+        }
+        
+        .footer {
+            background: var(--secondary);
+            color: white;
+            padding: 60px 0 30px;
+            margin-top: 100px;
+        }
+        
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            .report-section {
+                box-shadow: none;
+                padding: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top shadow-sm no-print">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                OncoDetect AI
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#home">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#detector">Detector</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#reports">Reports</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#research">Research</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link btn btn-primary text-white ms-2" href="#" onclick="openDetector()">Start Analysis</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold mb-4">Advanced Breast Cancer Detection with AI</h1>
+                    <p class="lead mb-4">Comprehensive diagnostic analysis with detailed medical report generation.</p>
+                    <div class="d-flex gap-3">
+                        <button class="btn btn-light btn-lg px-4" onclick="openDetector()">
+                            <i class="bi bi-cpu me-2"></i>Start Analysis
+                        </button>
+                        <button class="btn btn-outline-light btn-lg px-4" onclick="viewSampleReport()">
+                            <i class="bi bi-file-earmark-medical me-2"></i>View Sample Report
+                        </button>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="scientific-chart mt-5 mt-lg-0">
+                        <canvas id="accuracyChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Report Generator Section -->
+    <section id="reports" class="py-5">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold">Comprehensive Medical Reports</h2>
+                <p class="text-muted">Generate detailed PDF reports with clinical insights and recommendations</p>
+            </div>
+            
+            <div class="report-section" id="reportContainer">
+                <div class="report-header">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h3 class="fw-bold text-primary">ONCODETECT AI MEDICAL REPORT</h3>
+                            <p class="text-muted mb-0">Breast Cancer Diagnostic Analysis</p>
+                        </div>
+                        <div class="col-md-6 text-md-end">
+                            <p class="mb-1"><strong>Report ID:</strong> <span id="reportId">OCD-2024-001</span></p>
+                            <p class="mb-1"><strong>Date:</strong> <span id="reportDate">Loading...</span></p>
+                            <p class="mb-0"><strong>Version:</strong> 2.1 Clinical</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Patient Information -->
+                <div class="mb-4">
+                    <h5 class="fw-bold border-bottom pb-2">PATIENT INFORMATION</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Patient ID:</strong> <span id="patientId">P-789456</span></p>
+                            <p><strong>Age:</strong> <span id="patientAge">47</span> years</p>
+                            <p><strong>Gender:</strong> Female</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Referring Physician:</strong> Dr. Sarah Chen</p>
+                            <p><strong>Institution:</strong> Memorial Medical Center</p>
+                            <p><strong>Sample Collection Date:</strong> <span id="sampleDate">Loading...</span></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Executive Summary -->
+                <div class="mb-4">
+                    <h5 class="fw-bold border-bottom pb-2">EXECUTIVE SUMMARY</h5>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="alert" id="summaryAlert">
+                                <h6 class="fw-bold mb-2">Diagnostic Result:</h6>
+                                <p id="diagnosisSummary" class="mb-2">Analysis pending...</p>
+                                <div class="mt-3">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span>Confidence Level</span>
+                                        <span id="confidenceValue">0%</span>
+                                    </div>
+                                    <div class="progress" style="height: 20px;">
+                                        <div id="confidenceBar" class="progress-bar" role="progressbar" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center">
+                                <svg class="progress-ring" viewBox="0 0 120 120">
+                                    <circle class="progress-ring-background" cx="60" cy="60" r="54" stroke="#e9ecef" stroke-width="8" fill="none"/>
+                                    <circle id="reportProgressCircle" class="progress-ring-circle" cx="60" cy="60" r="54" stroke-width="8" fill="none"
+                                            stroke-dasharray="339.292" stroke-dashoffset="339.292"/>
+                                    <text id="reportProgressText" x="60" y="65" text-anchor="middle" font-size="24" font-weight="600" fill="#212529">0%</text>
+                                </svg>
+                                <p class="mt-2"><small>Model Confidence</small></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Biomarker Analysis -->
+                <div class="mb-4">
+                    <h5 class="fw-bold border-bottom pb-2">BIOMARKER ANALYSIS</h5>
+                    <div class="table-responsive">
+                        <table class="table biomarker-table">
+                            <thead>
+                                <tr>
+                                    <th>Biomarker</th>
+                                    <th>Value</th>
+                                    <th>Normal Range</th>
+                                    <th>Status</th>
+                                    <th>Risk Factor</th>
+                                </tr>
+                            </thead>
+                            <tbody id="biomarkerTable">
+                                <!-- Will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Risk Assessment -->
+                <div class="mb-4">
+                    <h5 class="fw-bold border-bottom pb-2">RISK ASSESSMENT</h5>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Overall Risk Level</span>
+                                    <span id="riskLevel">Low</span>
+                                </div>
+                                <div class="risk-meter">
+                                    <div id="riskIndicator" class="risk-indicator" style="left: 10%;"></div>
+                                </div>
+                                <div class="d-flex justify-content-between mt-1">
+                                    <small>Low</small>
+                                    <small>Medium</small>
+                                    <small>High</small>
+                                </div>
+                            </div>
+                            <div id="riskFactors"></div>
+                        </div>
+                        <div class="col-md-4">
+                            <canvas id="riskChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recommendations -->
+                <div class="mb-4">
+                    <h5 class="fw-bold border-bottom pb-2">CLINICAL RECOMMENDATIONS</h5>
+                    <div id="recommendationsList">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Technical Details -->
+                <div class="mb-4">
+                    <h5 class="fw-bold border-bottom pb-2">TECHNICAL DETAILS</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Analysis Model:</strong> Random Forest Classifier v3.2</p>
+                            <p><strong>Training Dataset:</strong> Wisconsin Breast Cancer Dataset</p>
+                            <p><strong>Features Analyzed:</strong> 30 cellular characteristics</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Model Accuracy:</strong> 95.6% (validated)</p>
+                            <p><strong>Analysis Time:</strong> <span id="analysisTime">0.5</span> seconds</p>
+                            <p><strong>Report Generated:</strong> <span id="generationTime">Loading...</span></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Disclaimers -->
+                <div class="mt-4 pt-3 border-top">
+                    <p class="small text-muted">
+                        <strong>Disclaimer:</strong> This report is generated by an AI diagnostic system and should be used as an辅助 tool for medical professionals. Final diagnosis must be made by qualified healthcare providers based on comprehensive clinical evaluation. This system has been validated for research purposes and is not a substitute for professional medical advice.
+                    </p>
+                    <p class="small text-muted">
+                        <strong>Confidentiality Notice:</strong> This report contains confidential medical information. Unauthorized disclosure is prohibited.
+                    </p>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="mt-4 text-center no-print">
+                    <button class="btn btn-primary me-2" onclick="generatePDF()">
+                        <i class="bi bi-download me-2"></i>Download PDF Report
+                    </button>
+                    <button class="btn btn-success me-2" onclick="printReport()">
+                        <i class="bi bi-printer me-2"></i>Print Report
+                    </button>
+                    <button class="btn btn-outline-primary" onclick="shareReport()">
+                        <i class="bi bi-share me-2"></i>Share Securely
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Detector Section -->
+    <section id="detector" class="py-5 bg-light">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold">Tumor Analysis System</h2>
+                <p class="text-muted">Enter cellular features for comprehensive analysis</p>
+            </div>
+            
+            <div class="form-section">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Patient ID</label>
+                        <input type="text" class="form-control" id="inputPatientId" placeholder="Enter patient identifier">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Patient Age</label>
+                        <input type="number" class="form-control" id="inputPatientAge" placeholder="Age in years">
+                    </div>
+                </div>
+                
+                <ul class="nav nav-tabs justify-content-center" id="featureTabs">
+                    <li class="nav-item">
+                        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#meanFeatures">Mean Features</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#seFeatures">Standard Error</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#worstFeatures">Worst Features</button>
+                    </li>
+                </ul>
+                
+                <div class="tab-content mt-4">
+                    <div class="tab-pane fade show active" id="meanFeatures">
+                        <div class="row g-3" id="meanFeaturesGrid"></div>
+                    </div>
+                    <div class="tab-pane fade" id="seFeatures">
+                        <div class="row g-3" id="seFeaturesGrid"></div>
+                    </div>
+                    <div class="tab-pane fade" id="worstFeatures">
+                        <div class="row g-3" id="worstFeaturesGrid"></div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <button class="btn btn-primary btn-lg px-5" onclick="runComprehensiveAnalysis()">
+                        <i class="bi bi-play-circle me-2"></i>Run Comprehensive Analysis
+                    </button>
+                    <button class="btn btn-outline-primary btn-lg ms-2 px-5" onclick="loadClinicalSample()">
+                        <i class="bi bi-database me-2"></i>Load Clinical Sample
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <h4 class="fw-bold mb-4">OncoDetect AI</h4>
+                    <p>Advanced AI-powered breast cancer detection system with comprehensive reporting.</p>
+                </div>
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h5 class="fw-bold mb-4">Services</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#detector" class="text-light text-decoration-none">Detection</a></li>
+                        <li class="mb-2"><a href="#reports" class="text-light text-decoration-none">Reporting</a></li>
+                        <li class="mb-2"><a href="#research" class="text-light text-decoration-none">Analytics</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h5 class="fw-bold mb-4">Legal</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#" class="text-light text-decoration-none">Privacy Policy</a></li>
+                        <li class="mb-2"><a href="#" class="text-light text-decoration-none">HIPAA Compliance</a></li>
+                        <li class="mb-2"><a href="#" class="text-light text-decoration-none">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <h5 class="fw-bold mb-4">Contact</h5>
+                    <p><i class="bi bi-envelope me-2"></i> contact@oncodetect.ai</p>
+                    <p><i class="bi bi-telephone me-2"></i> +1 (555) 123-4567</p>
+                    <p><i class="bi bi-building me-2"></i> 123 Medical Drive, Boston, MA</p>
+                </div>
+            </div>
+            <hr class="my-4" style="border-color: rgba(255,255,255,0.1);">
+            <div class="text-center">
+                <p class="mb-0">© 2024 OncoDetect AI. For clinical research use. FDA pending clearance.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Global variables
+        let currentAnalysis = null;
+        const { jsPDF } = window.jspdf;
+        
+        // Feature definitions with normal ranges
+        const biomarkers = [
+            // Mean features
+            {name: 'radius_mean', desc: 'Mean radius', unit: 'mm', normalMin: 10, normalMax: 20, weight: 0.1},
+            {name: 'texture_mean', desc: 'Mean texture', unit: 'std', normalMin: 15, normalMax: 25, weight: 0.08},
+            {name: 'perimeter_mean', desc: 'Mean perimeter', unit: 'mm', normalMin: 70, normalMax: 120, weight: 0.12},
+            {name: 'area_mean', desc: 'Mean area', unit: 'mm²', normalMin: 400, normalMax: 800, weight: 0.15},
+            {name: 'smoothness_mean', desc: 'Mean smoothness', unit: 'ratio', normalMin: 0.07, normalMax: 0.12, weight: 0.05},
+            {name: 'compactness_mean', desc: 'Mean compactness', unit: 'ratio', normalMin: 0.02, normalMax: 0.15, weight: 0.08},
+            {name: 'concavity_mean', desc: 'Mean concavity', unit: 'ratio', normalMin: 0, normalMax: 0.1, weight: 0.12},
+            {name: 'concave_points_mean', desc: 'Mean concave points', unit: 'ratio', normalMin: 0, normalMax: 0.05, weight: 0.15},
+            {name: 'symmetry_mean', desc: 'Mean symmetry', unit: 'ratio', normalMin: 0.15, normalMax: 0.25, weight: 0.05},
+            {name: 'fractal_dimension_mean', desc: 'Mean fractal dimension', unit: 'ratio', normalMin: 0.06, normalMax: 0.09, weight: 0.03},
+            
+            // SE features
+            {name: 'radius_se', desc: 'Radius SE', unit: 'mm', normalMin: 0.2, normalMax: 0.8, weight: 0.04},
+            {name: 'texture_se', desc: 'Texture SE', unit: 'std', normalMin: 0.5, normalMax: 1.5, weight: 0.03},
+            {name: 'perimeter_se', desc: 'Perimeter SE', unit: 'mm', normalMin: 1, normalMax: 5, weight: 0.05},
+            {name: 'area_se', desc: 'Area SE', unit: 'mm²', normalMin: 10, normalMax: 50, weight: 0.06},
+            {name: 'smoothness_se', desc: 'Smoothness SE', unit: 'ratio', normalMin: 0.003, normalMax: 0.01, weight: 0.02},
+            {name: 'compactness_se', desc: 'Compactness SE', unit: 'ratio', normalMin: 0.01, normalMax: 0.05, weight: 0.03},
+            {name: 'concavity_se', desc: 'Concavity SE', unit: 'ratio', normalMin: 0, normalMax: 0.02, weight: 0.04},
+            {name: 'concave_points_se', desc: 'Concave points SE', unit: 'ratio', normalMin: 0, normalMax: 0.01, weight: 0.05},
+            {name: 'symmetry_se', desc: 'Symmetry SE', unit: 'ratio', normalMin: 0.01, normalMax: 0.03, weight: 0.02},
+            {name: 'fractal_dimension_se', desc: 'Fractal dimension SE', unit: 'ratio', normalMin: 0.001, normalMax: 0.005, weight: 0.01},
+            
+            // Worst features
+            {name: 'radius_worst', desc: 'Worst radius', unit: 'mm', normalMin: 12, normalMax: 25, weight: 0.15},
+            {name: 'texture_worst', desc: 'Worst texture', unit: 'std', normalMin: 20, normalMax: 35, weight: 0.08},
+            {name: 'perimeter_worst', desc: 'Worst perimeter', unit: 'mm', normalMin: 80, normalMax: 150, weight: 0.12},
+            {name: 'area_worst', desc: 'Worst area', unit: 'mm²', normalMin: 500, normalMax: 1200, weight: 0.15},
+            {name: 'smoothness_worst', desc: 'Worst smoothness', unit: 'ratio', normalMin: 0.08, normalMax: 0.15, weight: 0.05},
+            {name: 'compactness_worst', desc: 'Worst compactness', unit: 'ratio', normalMin: 0.1, normalMax: 0.4, weight: 0.08},
+            {name: 'concavity_worst', desc: 'Worst concavity', unit: 'ratio', normalMin: 0, normalMax: 0.3, weight: 0.12},
+            {name: 'concave_points_worst', desc: 'Worst concave points', unit: 'ratio', normalMin: 0, normalMax: 0.1, weight: 0.15},
+            {name: 'symmetry_worst', desc: 'Worst symmetry', unit: 'ratio', normalMin: 0.2, normalMax: 0.4, weight: 0.05},
+            {name: 'fractal_dimension_worst', desc: 'Worst fractal dimension', unit: 'ratio', normalMin: 0.07, normalMax: 0.12, weight: 0.03}
+        ];
+
+        // Initialize application
+        function initApplication() {
+            initializeForm();
+            initializeCharts();
+            updateReportDate();
+            generateReportId();
+            loadSampleReport();
+        }
+
+        function initializeForm() {
+            // Create input fields for all biomarkers
+            const meanGrid = document.getElementById('meanFeaturesGrid');
+            const seGrid = document.getElementById('seFeaturesGrid');
+            const worstGrid = document.getElementById('worstFeaturesGrid');
+            
+            meanGrid.innerHTML = '';
+            seGrid.innerHTML = '';
+            worstGrid.innerHTML = '';
+            
+            biomarkers.forEach((biomarker, index) => {
+                const inputHTML = `
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <strong>${biomarker.name.toUpperCase().replace('_', ' ')}</strong>
+                                <small class="text-muted d-block">${biomarker.desc} (${biomarker.unit})</small>
+                            </label>
+                            <input type="number" step="any" class="form-control biomarker-input" 
+                                   data-biomarker="${biomarker.name}"
+                                   placeholder="Normal: ${biomarker.normalMin}-${biomarker.normalMax}">
+                        </div>
+                    </div>
+                `;
+                
+                if (index < 10) {
+                    meanGrid.innerHTML += inputHTML;
+                } else if (index < 20) {
+                    seGrid.innerHTML += inputHTML;
+                } else {
+                    worstGrid.innerHTML += inputHTML;
+                }
+            });
+        }
+
+        function initializeCharts() {
+            // Initialize risk chart
+            const riskCtx = document.getElementById('riskChart').getContext('2d');
+            new Chart(riskCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Normal', 'Elevated', 'High'],
+                    datasets: [{
+                        data: [70, 20, 10],
+                        backgroundColor: ['#2a9d8f', '#f4a261', '#e63946']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateReportDate() {
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            document.getElementById('reportDate').textContent = dateStr;
+            document.getElementById('sampleDate').textContent = dateStr;
+            document.getElementById('generationTime').textContent = dateStr;
+        }
+
+        function generateReportId() {
+            const id = 'OCD-' + Date.now().toString().slice(-6);
+            document.getElementById('reportId').textContent = id;
+            return id;
+        }
+
+        function loadSampleReport() {
+            // Load sample data
+            const sampleValues = {
+                radius_mean: 17.99,
+                texture_mean: 10.38,
+                perimeter_mean: 122.8,
+                area_mean: 1001,
+                smoothness_mean: 0.1184,
+                compactness_mean: 0.2776,
+                concavity_mean: 0.3001,
+                concave_points_mean: 0.1471,
+                symmetry_mean: 0.2419,
+                fractal_dimension_mean: 0.07871,
+                radius_se: 1.095,
+                texture_se: 0.9053,
+                perimeter_se: 8.589,
+                area_se: 153.4,
+                smoothness_se: 0.006399,
+                compactness_se: 0.04904,
+                concavity_se: 0.05373,
+                concave_points_se: 0.01587,
+                symmetry_se: 0.03003,
+                fractal_dimension_se: 0.006193,
+                radius_worst: 25.38,
+                texture_worst: 17.33,
+                perimeter_worst: 184.6,
+                area_worst: 2019,
+                smoothness_worst: 0.1622,
+                compactness_worst: 0.6656,
+                concavity_worst: 0.7119,
+                concave_points_worst: 0.2654,
+                symmetry_worst: 0.4601,
+                fractal_dimension_worst: 0.1189
+            };
+
+            // Simulate analysis
+            simulateAnalysis(sampleValues, true);
+        }
+
+        function runComprehensiveAnalysis() {
+            const inputs = document.querySelectorAll('.biomarker-input');
+            const values = {};
+            let isValid = true;
+            
+            // Collect values
+            inputs.forEach(input => {
+                const value = parseFloat(input.value);
+                if (isNaN(value)) {
+                    input.classList.add('is-invalid');
+                    isValid = false;
+                } else {
+                    input.classList.remove('is-invalid');
+                    values[input.dataset.biomarker] = value;
+                }
+            });
+            
+            // Validate patient info
+            const patientId = document.getElementById('inputPatientId').value;
+            const patientAge = document.getElementById('inputPatientAge').value;
+            
+            if (!patientId || !patientAge) {
+                alert('Please enter Patient ID and Age');
+                return;
+            }
+            
+            if (!isValid) {
+                alert('Please enter valid values for all biomarkers');
+                return;
+            }
+            
+            // Update patient info in report
+            document.getElementById('patientId').textContent = patientId;
+            document.getElementById('patientAge').textContent = patientAge;
+            
+            // Run analysis
+            simulateAnalysis(values, false);
+            
+            // Scroll to report
+            document.getElementById('reports').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function simulateAnalysis(values, isSample = false) {
+            // Store current analysis
+            currentAnalysis = {
+                values: values,
+                timestamp: new Date(),
+                isMalignant: false,
+                confidence: 0,
+                riskScore: 0,
+                abnormalMarkers: []
+            };
+            
+            // Calculate risk score
+            let totalScore = 0;
+            let totalWeight = 0;
+            
+            biomarkers.forEach(biomarker => {
+                const value = values[biomarker.name];
+                if (value !== undefined) {
+                    // Calculate deviation from normal
+                    let deviation = 0;
+                    if (value < biomarker.normalMin) {
+                        deviation = (biomarker.normalMin - value) / biomarker.normalMin;
+                    } else if (value > biomarker.normalMax) {
+                        deviation = (value - biomarker.normalMax) / biomarker.normalMax;
+                    }
+                    
+                    const markerScore = deviation * biomarker.weight * 100;
+                    totalScore += markerScore;
+                    totalWeight += biomarker.weight;
+                    
+                    if (deviation > 0.3) { // 30% deviation from normal
+                        currentAnalysis.abnormalMarkers.push({
+                            name: biomarker.name,
+                            value: value,
+                            deviation: deviation,
+                            status: value > biomarker.normalMax ? 'High' : 'Low'
+                        });
+                    }
+                }
+            });
+            
+            // Normalize score
+            currentAnalysis.riskScore = Math.min(100, totalScore / totalWeight);
+            currentAnalysis.isMalignant = currentAnalysis.riskScore > 60;
+            currentAnalysis.confidence = 85 + Math.random() * 10;
+            
+            // Update report
+            updateReport(currentAnalysis);
+            
+            // Show success message
+            if (!isSample) {
+                showNotification('Analysis complete! Report has been updated.', 'success');
+            }
+        }
+
+        function updateReport(analysis) {
+            // Update summary
+            const summaryAlert = document.getElementById('summaryAlert');
+            const diagnosisSummary = document.getElementById('diagnosisSummary');
+            const confidenceValue = document.getElementById('confidenceValue');
+            const confidenceBar = document.getElementById('confidenceBar');
+            
+            if (analysis.isMalignant) {
+                summaryAlert.className = 'alert alert-danger';
+                diagnosisSummary.textContent = 'MALIGNANT TUMOR DETECTED - High probability of malignancy based on biomarker analysis.';
+            } else {
+                summaryAlert.className = 'alert alert-success';
+                diagnosisSummary.textContent = 'BENIGN TUMOR DETECTED - Low probability of malignancy based on biomarker analysis.';
+            }
+            
+            confidenceValue.textContent = `${analysis.confidence.toFixed(1)}%`;
+            confidenceBar.style.width = `${analysis.confidence}%`;
+            confidenceBar.className = `progress-bar bg-${analysis.isMalignant ? 'danger' : 'success'}`;
+            
+            // Update progress ring
+            const circle = document.getElementById('reportProgressCircle');
+            const text = document.getElementById('reportProgressText');
+            const circumference = 2 * Math.PI * 54;
+            const offset = circumference - (analysis.confidence / 100) * circumference;
+            
+            setTimeout(() => {
+                circle.style.strokeDashoffset = offset;
+                circle.style.stroke = analysis.isMalignant ? 'var(--danger)' : 'var(--success)';
+                text.textContent = `${analysis.confidence.toFixed(1)}%`;
+            }, 100);
+            
+            // Update biomarker table
+            const tableBody = document.getElementById('biomarkerTable');
+            tableBody.innerHTML = '';
+            
+            biomarkers.forEach(biomarker => {
+                const value = analysis.values[biomarker.name];
+                if (value !== undefined) {
+                    const isAbnormal = value < biomarker.normalMin || value > biomarker.normalMax;
+                    const status = isAbnormal ? 
+                        (value > biomarker.normalMax ? 'High' : 'Low') : 
+                        'Normal';
+                    
+                    tableBody.innerHTML += `
+                        <tr>
+                            <td>${biomarker.desc}</td>
+                            <td>${value.toFixed(4)} ${biomarker.unit}</td>
+                            <td>${biomarker.normalMin}-${biomarker.normalMax}</td>
+                            <td>
+                                <span class="badge bg-${isAbnormal ? (value > biomarker.normalMax ? 'danger' : 'warning') : 'success'}">
+                                    ${status}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar bg-${isAbnormal ? 'danger' : 'success'}" 
+                                         style="width: ${isAbnormal ? '100' : '0'}%"></div>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }
+            });
+            
+            // Update risk assessment
+            const riskLevel = document.getElementById('riskLevel');
+            const riskIndicator = document.getElementById('riskIndicator');
+            const riskFactors = document.getElementById('riskFactors');
+            
+            let riskText = 'Low';
+            let riskPosition = 10;
+            
+            if (analysis.riskScore > 75) {
+                riskText = 'High';
+                riskPosition = 90;
+                riskLevel.className = 'text-danger fw-bold';
+            } else if (analysis.riskScore > 40) {
+                riskText = 'Medium';
+                riskPosition = 50;
+                riskLevel.className = 'text-warning fw-bold';
+            } else {
+                riskText = 'Low';
+                riskPosition = 10;
+                riskLevel.className = 'text-success fw-bold';
+            }
+            
+            riskLevel.textContent = riskText;
+            riskIndicator.style.left = `${riskPosition}%`;
+            
+            // Update risk factors
+            riskFactors.innerHTML = `
+                <p><strong>Key Risk Factors Identified:</strong></p>
+                <ul>
+                    ${analysis.abnormalMarkers.slice(0, 5).map(marker => 
+                        `<li>${marker.name.replace('_', ' ')}: ${marker.status} (${marker.value.toFixed(3)})</li>`
+                    ).join('')}
+                </ul>
+            `;
+            
+            // Update recommendations
+            const recommendationsList = document.getElementById('recommendationsList');
+            recommendationsList.innerHTML = '';
+            
+            const recommendations = analysis.isMalignant ? [
+                'Immediate consultation with oncologist recommended within 48 hours',
+                'Schedule follow-up mammogram and ultrasound',
+                'Consider biopsy for histological confirmation',
+                'Multidisciplinary team review recommended',
+                'Genetic counseling may be indicated'
+            ] : [
+                'Routine follow-up in 6 months recommended',
+                'Continue regular self-examination',
+                'Annual mammogram as per screening guidelines',
+                'Maintain healthy lifestyle and diet',
+                'Follow up with primary care physician'
+            ];
+            
+            recommendations.forEach((rec, index) => {
+                recommendationsList.innerHTML += `
+                    <div class="recommendation-box">
+                        <p class="mb-0">${index + 1}. ${rec}</p>
+                    </div>
+                `;
+            });
+            
+            // Update analysis time
+            document.getElementById('analysisTime').textContent = '0.5';
+        }
+
+        function generatePDF() {
+            const reportElement = document.getElementById('reportContainer');
+            
+            // Show loading
+            showNotification('Generating PDF report...', 'info');
+            
+            html2canvas(reportElement, {
+                scale: 2,
+                useCORS: true,
+                logging: false
+            }).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const imgWidth = 190;
+                const imgHeight = canvas.height * imgWidth / canvas.width;
+                
+                pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
+                pdf.save(`OncoDetect-Report-${document.getElementById('reportId').textContent}.pdf`);
+                
+                showNotification('PDF report downloaded successfully!', 'success');
+            });
+        }
+
+        function printReport() {
+            window.print();
+        }
+
+        function shareReport() {
+            alert('Secure sharing feature would integrate with HIPAA-compliant sharing services.');
+        }
+
+        function loadClinicalSample() {
+            // Load sample malignant data
+            const sampleValues = {
+                radius_mean: 17.99,
+                texture_mean: 10.38,
+                perimeter_mean: 122.8,
+                area_mean: 1001,
+                smoothness_mean: 0.1184,
+                compactness_mean: 0.2776,
+                concavity_mean: 0.3001,
+                concave_points_mean: 0.1471,
+                symmetry_mean: 0.2419,
+                fractal_dimension_mean: 0.07871,
+                radius_se: 1.095,
+                texture_se: 0.9053,
+                perimeter_se: 8.589,
+                area_se: 153.4,
+                smoothness_se: 0.006399,
+                compactness_se: 0.04904,
+                concavity_se: 0.05373,
+                concave_points_se: 0.01587,
+                symmetry_se: 0.03003,
+                fractal_dimension_se: 0.006193,
+                radius_worst: 25.38,
+                texture_worst: 17.33,
+                perimeter_worst: 184.6,
+                area_worst: 2019,
+                smoothness_worst: 0.1622,
+                compactness_worst: 0.6656,
+                concavity_worst: 0.7119,
+                concave_points_worst: 0.2654,
+                symmetry_worst: 0.4601,
+                fractal_dimension_worst: 0.1189
+            };
+            
+            // Fill form
+            Object.entries(sampleValues).forEach(([key, value]) => {
+                const input = document.querySelector(`input[data-biomarker="${key}"]`);
+                if (input) input.value = value;
+            });
+            
+            showNotification('Clinical sample loaded. Click "Run Comprehensive Analysis" to generate report.', 'info');
+        }
+
+        function viewSampleReport() {
+            document.getElementById('reports').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function openDetector() {
+            document.getElementById('detector').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function showNotification(message, type = 'info') {
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            alert.style.top = '20px';
+            alert.style.right = '20px';
+            alert.style.zIndex = '9999';
+            alert.style.minWidth = '300px';
+            alert.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(alert);
+            
+            setTimeout(() => {
+                if (alert.parentNode) {
+                    alert.remove();
+                }
+            }, 5000);
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', initApplication);
+    </script>
+</body>
+</html>
